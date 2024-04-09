@@ -1,11 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-
 // Import the functions you want to test
-const { game, newGame, showScore } = require("../game");
-const { beforeAll, test } = require("@jest/globals");
-
+const { game, newGame, showScore, addTurn, lightsOn } = require("../game");
 beforeAll(() => {
   let fs = require("fs");
   let fileContents = fs.readFileSync("index.html", "UTF-8");
@@ -40,16 +37,39 @@ describe("newGame works correctly", () => {
         document.getElementById("score").innerText = 42;
         newGame();
     });
-    test("score is 0", () => {
-        expect(game.score).toBe(0);
+    test("should set game score to zero", () => {
+      expect(game.score).toBe(0);
     });
-    test("Clear the playerMoves array", () => {
-        expect(game.playerMoves.length).toBe(0);
+    test("should be one move in the computer's game array", () => {
+        expect(game.currentGame.length).toBe(1);
     });
     test("Clear the currentGame array", () => {
-        expect(game.currentGame.length).toBe(0);
+        expect(game.playerMoves.length).toBe(0);
     });
     test("should display 0 in the #score element", () => {
         expect(document.getElementById("score").innerText).toBe(0);
     });
+});
+
+describe("gameplay works correctly", () => {
+  beforeEach(() => {
+    game.score = 0;
+    game.currentGame = [];
+    game.playerMoves = [];
+    addTurn();
+  });
+  afterEach(() => {
+    game.score = 0;
+    game.currentGame = [];
+    game.playerMoves = [];
+  });
+  test("addTurn adds a new turn to the game", () => {
+    addTurn();
+    expect(game.currentGame.length).toBe(2);
+  });
+  test("should add the correct class to the button", () => {
+    let button = document.getElementById(game.currentGame[0]);
+    lightsOn(game.currentGame[0]);
+    expect(button.classList).toContain("light");
+  });
 });
